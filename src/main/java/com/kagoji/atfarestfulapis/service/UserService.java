@@ -10,8 +10,8 @@ import com.kagoji.atfarestfulapis.model.UserModel;
 public interface UserService {
 	List<User> alluserlist();
 	User createUser(UserModel userModel);
-	public String updateUser(Long userId,UserModel userModel);
-	public String deleteUser(Long userId);
+	User updateUser(Long userId,UserModel userModel);
+	public Boolean deleteUser(Long userId);
 	Optional<User> getUser(Long userId);
 	
 }

@@ -8,19 +8,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kagoji.atfarestfulapis.entity.User;
 import com.kagoji.atfarestfulapis.model.UserModel;
-import com.kagoji.atfarestfulapis.response.ApiResponse;
 import com.kagoji.atfarestfulapis.response.ResponseHandler;
 import com.kagoji.atfarestfulapis.service.UserService;
-import org.springframework.http.MediaType;
+
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -38,9 +39,14 @@ public class UserController {
 	   */
 	
 	@GetMapping("/users")
-	public List<User> getAllUsers(){
-		return userService.alluserlist();
+	public ResponseEntity<Object> getAllUsers(){
+		List<User> userList = userService.alluserlist();
 		
+		if(!userList.isEmpty()) {
+			return ResponseHandler.responseBuilder("All user list", HttpStatus.OK, userList);
+		}else {
+			return ResponseHandler.responseBuilder("No data available", HttpStatus.OK, null);
+		}
 	}
 	
 	
@@ -55,7 +61,6 @@ public class UserController {
 	public ResponseEntity<Object> getUserinfo(@PathVariable("userId") Long userId) {
 		
 		Optional<User> userOptional= userService.getUser(userId);
-		
 		
 		if(userOptional.isPresent()) {
 			User userinfo = userOptional.get();
@@ -90,6 +95,47 @@ public class UserController {
 		
 	}
 	
+	/**
+	   * Gets update by id.
+	   *
+	   * @param userId the user id, UserModel 
+	   * @return response
+	   * @throws ResourceNotFoundException the resource not found exception
+	   */
 	
+	@PutMapping("/users/update/{userId}")
+	public ResponseEntity<Object> updateUserEntity(@PathVariable("userId") Long userId,@RequestBody UserModel userModel){
+		User updateUser = userService.updateUser(userId, userModel);
+		if(updateUser != null) {
+			return ResponseHandler.responseBuilder("user has been updated",
+	                HttpStatus.OK, updateUser);
+		}else {
+			return ResponseHandler.responseBuilder("user not found",
+	                HttpStatus.NOT_FOUND, null);
+		}
+	}
+	
+	
+	/**
+	   * Delete by id.
+	   *
+	   * @param userId the user id 
+	   * @return response
+	   * @throws ResourceNotFoundException the resource not found exception
+	   */
+	
+	@DeleteMapping("/users/delete/{userId}")	
+	public ResponseEntity<Object> deleteUserInfo(@PathVariable("userId") Long userId) {
+		
+		Boolean confirmation = userService.deleteUser(userId);
+		
+		if(confirmation) {
+			return ResponseHandler.responseBuilder("user has been removed",
+	                HttpStatus.OK, confirmation);
+		}else {
+			return ResponseHandler.responseBuilder("user not found",
+	                HttpStatus.NOT_FOUND, confirmation);
+		}
+	}
 	
 }

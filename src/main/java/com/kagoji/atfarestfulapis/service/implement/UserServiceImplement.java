@@ -38,15 +38,31 @@ public class UserServiceImplement implements UserService{
 	}
 
 	@Override
-	public String updateUser(Long userId, UserModel userModel) {
-		// TODO Auto-generated method stub
-		return null;
+	public User updateUser(Long userId, UserModel userModel) {
+		
+		Optional<User> userUpdateOptional = userRepository.findById(userId);
+
+	    if (userUpdateOptional.isPresent()) {
+	    	User userUpdateInfo = userUpdateOptional.get();
+	    	userUpdateInfo.setUserName(userModel.getUserName());
+	    	userUpdateInfo.setRole(userModel.getRole());
+			return userRepository.save(userUpdateInfo);
+	    }else {
+	    	return null;
+	    }
+		
 	}
 
 	@Override
-	public String deleteUser(Long userId) {
+	public Boolean deleteUser(Long userId) {
 		// TODO Auto-generated method stub
-		return null;
+		Optional<User> userUpdateOptional = userRepository.findById(userId);
+	    if (userUpdateOptional.isPresent()) {
+	    	userRepository.deleteById(userId);
+			return true;
+	    }else {
+	    	return false;
+	    }
 	}
 
 	@Override
