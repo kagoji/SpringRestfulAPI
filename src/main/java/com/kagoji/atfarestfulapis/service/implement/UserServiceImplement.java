@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kagoji.atfarestfulapis.entity.User;
+import com.kagoji.atfarestfulapis.exception.ApiThrowException;
 import com.kagoji.atfarestfulapis.model.UserModel;
 import com.kagoji.atfarestfulapis.repository.UserRepository;
 import com.kagoji.atfarestfulapis.service.UserService;
@@ -22,7 +23,8 @@ public class UserServiceImplement implements UserService{
 	
 	@Override
 	public List<User> alluserlist(){
-		return userRepository.findAll();
+		List<User> userList = userRepository.findAll();
+		return userList;
 		
 	}
 
@@ -68,6 +70,10 @@ public class UserServiceImplement implements UserService{
 	@Override
 	public Optional<User> getUser(Long userId) {
 		// TODO Auto-generated method stub
+		Optional<User> userInfo = userRepository.findById(userId);
+		if(userInfo.isEmpty())
+			throw new ApiThrowException("User not found");
+		
 		return userRepository.findById(userId);
 	}
 	

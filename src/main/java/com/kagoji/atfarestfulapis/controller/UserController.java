@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kagoji.atfarestfulapis.entity.User;
+import com.kagoji.atfarestfulapis.exception.ApiThrowException;
 import com.kagoji.atfarestfulapis.model.UserModel;
 import com.kagoji.atfarestfulapis.response.ResponseHandler;
 import com.kagoji.atfarestfulapis.service.UserService;
@@ -28,8 +29,9 @@ import com.kagoji.atfarestfulapis.service.UserService;
 public class UserController {
 	
 	@Autowired
-	UserService userService;
+	private UserService userService;
 	
+
 	
 	/**
 	   * Gets all user
@@ -40,7 +42,7 @@ public class UserController {
 	
 	@GetMapping("/users")
 	public ResponseEntity<Object> getAllUsers(){
-		List<User> userList = userService.alluserlist();
+		List <User> userList = userService.alluserlist();
 		
 		if(!userList.isEmpty()) {
 			return ResponseHandler.responseBuilder("All user list", HttpStatus.OK, userList);
@@ -61,16 +63,10 @@ public class UserController {
 	public ResponseEntity<Object> getUserinfo(@PathVariable("userId") Long userId) {
 		
 		Optional<User> userOptional= userService.getUser(userId);
+		User userinfo = userOptional.get();
 		
-		if(userOptional.isPresent()) {
-			User userinfo = userOptional.get();
-			return ResponseHandler.responseBuilder("user Details are given here",
-	                HttpStatus.OK, userinfo);
-	
-		}else {
-			return ResponseHandler.responseBuilder("user not found",
-	                HttpStatus.NOT_FOUND, null);
-		}
+		return ResponseHandler.responseBuilder("user Details are given here",
+                HttpStatus.OK, userinfo);
 	}
 	
 	
