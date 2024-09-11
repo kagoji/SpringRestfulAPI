@@ -1,48 +1,62 @@
 package com.kagoji.atfarestfulapis.logger;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
+import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.logging.Logger;
+
+
+import org.slf4j.Logger;
 
 @Component
-public class AccessLogFilter implements Filter {
-
-    private static final Logger logger = Logger.getLogger(AccessLogFilter.class.getName());
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        // Initialization code, if necessary
-    }
-
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-
-        // Log request details
-        logger.info("Request: " + httpRequest.getMethod() + " " + httpRequest.getRequestURI());
-
-        // Proceed with the next filter in the chain
-        chain.doFilter(request, response);
-
-        // Log response details
-        logger.info("Response: " + httpResponse.getStatus());
-    }
-
-    @Override
-    public void destroy() {
-        // Cleanup code, if necessary
-    }
+@Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class AccessLogFilter extends OncePerRequestFilter {
+	
+	private static final Logger logger = LoggerFactory.getLogger("RequestLogger");
+	
+	@Autowired
+	CustomLogger customLogger;
+	
+	@Override
+	protected void doFilterInternal(jakarta.servlet.http.HttpServletRequest request,
+			jakarta.servlet.http.HttpServletResponse response, jakarta.servlet.FilterChain filterChain)
+			throws jakarta.servlet.ServletException, IOException {
+      logger.info("Request URL: " + request.getRequestURL());
+      logger.info("HTTP Method: " + request.getMethod());
+      logger.info("Request Headers: " + getHeaders(request));
+      logger.info("Request Body: " + getRequestBody(request));
+      filterChain.doFilter(request, response);
+      //private final logMessage = "url";
+      //customLogger.customLogWrite("sum","sum", logMessage);
+	}
+	
+  private String getRequestBody(jakarta.servlet.http.HttpServletRequest request) {
+  StringBuilder requestBody = new StringBuilder();
+  try (BufferedReader reader = request.getReader()) {
+      String line;
+      while ((line = reader.readLine()) != null) {
+          requestBody.append(line);
+      }
+  } catch (IOException e) {
+      logger.error("Failed to read the request body", e);
+  }
+  return requestBody.toString();
 }
 
+private String getHeaders(jakarta.servlet.http.HttpServletRequest request) {
+  StringBuilder headers = new StringBuilder();
+  for (String headerName : java.util.Collections.list(request.getHeaderNames())) {
+      headers.append(headerName).append(": ").append(request.getHeader(headerName)).append("\n");
+  }
+  return headers.toString();
+}
+	
+
+}
