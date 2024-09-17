@@ -43,7 +43,7 @@ public class UserController {
 	@GetMapping("/users")
 	public ResponseEntity<Object> getAllUsers(){
 		List <User> userList = userService.alluserlist();
-		
+		System.out.println("LIST Controller");
 		if(!userList.isEmpty()) {
 			return ResponseHandler.responseBuilder("All user list", HttpStatus.OK, userList);
 		}else {

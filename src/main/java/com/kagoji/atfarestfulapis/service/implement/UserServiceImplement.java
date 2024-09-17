@@ -1,6 +1,7 @@
 package com.kagoji.atfarestfulapis.service.implement;
 
 import java.util.List;
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import com.kagoji.atfarestfulapis.exception.ApiThrowException;
 import com.kagoji.atfarestfulapis.model.UserModel;
 import com.kagoji.atfarestfulapis.repository.UserRepository;
 import com.kagoji.atfarestfulapis.service.UserService;
-//import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 @Service
 public class UserServiceImplement implements UserService{
 	
@@ -19,7 +20,7 @@ public class UserServiceImplement implements UserService{
 	UserRepository userRepository;
 	
 	@Autowired
-	//private PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 	
 	@Override
 	public List<User> alluserlist(){
@@ -32,9 +33,9 @@ public class UserServiceImplement implements UserService{
 	public User createUser(UserModel userModel) {
 		User user = new User();
 		user.setUserName(userModel.getUserName());
-		///user.setPassword(passwordE.encode(userModel.getPassword()));
-		user.setPassword(userModel.getPassword());
+		user.setPassword(passwordEncoder.encode(userModel.getPassword()));
 		user.setRole(userModel.getRole());
+		System.out.println(user);
 		userRepository.save(user);
 		return user;
 	}
@@ -76,5 +77,6 @@ public class UserServiceImplement implements UserService{
 		
 		return userRepository.findById(userId);
 	}
+	
 	
 }
