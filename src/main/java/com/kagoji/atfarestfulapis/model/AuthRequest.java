@@ -1,17 +1,17 @@
 package com.kagoji.atfarestfulapis.model;
 
-import org.springframework.stereotype.Component;
-
 
 public class AuthRequest {
+	
+	private String username;
+	private String password;
 	
 	public AuthRequest(String username, String password) {
 		super();
 		this.username = username;
 		this.password = password;
 	}
-	private String username;
-	private String password;
+	
 	
 	public String getUsername() {
 		return username;

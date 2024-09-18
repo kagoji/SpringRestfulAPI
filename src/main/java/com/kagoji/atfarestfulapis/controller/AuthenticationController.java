@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.kagoji.atfarestfulapis.logger.CustomLogger;
 import com.kagoji.atfarestfulapis.model.AuthRequest;
@@ -32,21 +33,30 @@ public class AuthenticationController {
 		
 		try {
 			
-			String logMessage = authRequest.getUsername()+"|"+authRequest.getPassword();
-            customLogger.customLogWrite("temp","trace_log", logMessage);
-            //return ResponseHandler.responseBuilder("Logged in successfully", HttpStatus.OK, null);
 	        Authentication authentication = authenticationManager.authenticate(
 	            new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword())
 	        );
-	        customLogger.customLogWrite("temp","trace_log", authentication.toString());
+	        
+	        
 	        if (authentication.isAuthenticated()) {
-	            return ResponseHandler.responseBuilder("Logged in successfully", HttpStatus.OK, null);
+	        	//Authenticate user details
+	        	 Object principal = authentication.getPrincipal();
+	        	 String username = null;
+	        	 
+	        	 if (principal instanceof UserDetails) {
+	                  username = ((UserDetails) principal).getUsername();
+	                 
+	             } else {
+	            	 username = principal.toString();
+	             }
+	        	 
+	            return ResponseHandler.responseBuilder("Logged in successfully", HttpStatus.OK, username);
+	            
 	        } else {
 	            return ResponseHandler.responseBuilder("Username or password incorrect", HttpStatus.NOT_ACCEPTABLE, null);
 	        }
+	        
 	    } catch (Exception e) {
-	        // Log the exception and return an appropriate response
-	    	customLogger.customLogWrite("temp","trace_log",  e.getMessage());
 	        return ResponseHandler.responseBuilder("Authentication failed", HttpStatus.UNAUTHORIZED, e.getMessage());
 	    }
 	}
