@@ -1,5 +1,5 @@
 # SpringRestfulAPI
-Spring Boot Restful API with JWT and AOP
+Spring Boot Restful API with JWT and Custom Log writer
  
 ## Table of Contents
 
@@ -36,13 +36,12 @@ Follow these steps to set up and start using the Spring Boot Dashboard.
 
 2. Install the Spring Boot Dashboard plugin or extension if it's not already installed. Refer to your IDE's documentation for instructions on how to install plugins.
 
-## Configuration
+## Import the Postman Collection
 
-No specific configuration is required for the Spring Boot Dashboard. It automatically detects Spring Boot applications within your project workspace.
-
-- Using the Dashboard
-
-Once you have the Spring Boot Dashboard installed, you can perform various actions on your Spring Boot applications.
+   - Download the Postman collection file from [Postman Collection]([link-to-your-collection-file](https://documenter.getpostman.com/view/4302549/2sAXqqe49t)).
+   - Open Postman.
+   - Click on the "Import" button.
+   - Select the downloaded file and click "Open".
 
 ## Starting and Stopping Applications
 
@@ -53,6 +52,7 @@ Once you have the Spring Boot Dashboard installed, you can perform various actio
 3. To start an application, select it from the list and click the "Start" button.
 
 4. To stop an application, select it from the list and click the "Stop" button.
+## Postman Documetation
 
 ## Viewing Logs
 
