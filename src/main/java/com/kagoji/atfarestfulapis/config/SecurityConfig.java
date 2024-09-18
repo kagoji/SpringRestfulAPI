@@ -5,6 +5,7 @@ package com.kagoji.atfarestfulapis.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,42 +13,51 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import jakarta.servlet.http.HttpServletResponse;
+import com.kagoji.atfarestfulapis.exception.ApiThrowException;
+import com.kagoji.atfarestfulapis.filter.JwtAuthFilter;
+
+
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 	
+
+	
+	@Autowired
+	@Lazy
+	private JwtAuthFilter authFilter;
+	
+	@Autowired
+	CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
 	
 	@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Disable all security
-        http.csrf().disable()
-            .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll()); // Allow all routes
+        http
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/getToken", "/api/v1/users/create").permitAll()
+                .anyRequest().authenticated() // Protect all other endpoints
+            )
+            .sessionManagement(sess -> sess
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // No sessions
+            )
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(customAuthenticationEntryPoint) // Handle unauthenticated access
+                )
+            .authenticationProvider(authenticationProvider()) // Custom authentication provider
+            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
 
         return http.build();
     }
-	
-	//only 
-//	 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf().disable()
-//            .authorizeHttpRequests(auth -> auth
-//                .requestMatchers("/api/v1/getToken").permitAll()
-//                .anyRequest().authenticated()
-//            )
-//            .exceptionHandling()
-//                .authenticationEntryPoint((request, response, authException) -> 
-//                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
-//                );
-//
-//        return http.build();
-//    }
 	
 	@Bean
     public PasswordEncoder passwordEncoder() {
