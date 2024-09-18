@@ -38,7 +38,7 @@ Follow these steps to set up and start using the Spring Boot Dashboard.
 
 ## Import the Postman Collection
 
-   - Download the Postman collection file from [Postman Collection]([link-to-your-collection-file](https://documenter.getpostman.com/view/4302549/2sAXqqe49t)).
+   - Download the Postman collection file from [Postman Collection](https://documenter.getpostman.com/view/4302549/2sAXqqe49t)
    - Open Postman.
    - Click on the "Import" button.
    - Select the downloaded file and click "Open".
@@ -52,13 +52,12 @@ Follow these steps to set up and start using the Spring Boot Dashboard.
 3. To start an application, select it from the list and click the "Start" button.
 
 4. To stop an application, select it from the list and click the "Stop" button.
-## Postman Documetation
 
 ## Viewing Logs
 
 Some Spring Boot Dashboards provide the ability to view application logs:
 
-1. Select an application from the dashboard.
+1. Project Log custom log directory [src/main/resources/logs].
 
 2. Look for an option to view logs. You can typically view log files or real-time log output.
 
